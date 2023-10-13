@@ -1,11 +1,13 @@
 package br.com.gabrielvitebo.todolist.task;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,8 +24,8 @@ public class TaskController {
 
   @PostMapping("/")
   public ResponseEntity create(@RequestBody TaskModel taskModel, HttpServletRequest request) {
-    var user_id = request.getAttribute("user_id");
-    taskModel.setUser_id((UUID) user_id);
+    var userId = request.getAttribute("userId");
+    taskModel.setUserId((UUID) userId);
 
     var currentDate = LocalDateTime.now();
 
@@ -39,5 +41,12 @@ public class TaskController {
 
     var task = this.taskRepository.save(taskModel);
     return ResponseEntity.status(HttpStatus.OK).body(task);
+  }
+
+  @GetMapping("/")
+  public List<TaskModel> list(HttpServletRequest request) {
+    var userId = request.getAttribute("userId");
+    var tasks = this.taskRepository.findByUserId((UUID) userId);
+    return tasks;
   }
 }
